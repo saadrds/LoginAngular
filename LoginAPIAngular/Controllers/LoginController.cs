@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
+
 
 namespace LoginAPIAngular.Controllers
 {
@@ -81,6 +81,9 @@ namespace LoginAPIAngular.Controllers
             var currentUser = HttpContext.User.Claims.Where(x => x.Type == "userid").SingleOrDefault();
             return Ok("connected " + currentUser.Value);
         }
+
+
+
 
 
     }
