@@ -78,12 +78,21 @@ namespace LoginAPIAngular.Controllers
 
         [HttpGet]
         [Authorize]
-        public IActionResult Get()  
+        public User Get()  
         {
             var currentUser = HttpContext.User.Claims.Where(x => x.Type == "userid").SingleOrDefault();
 
-            
-            return Ok("connected " + currentUser.Value);
+
+            return service.findUser(Convert.ToInt32(currentUser.Value));
+        }
+
+        [HttpGet]
+        [Authorize]
+        [Route("/[controller]/[action]")]
+        public List<User> getAllUsers()
+        {
+
+            return service.allUsers();
         }
 
 
