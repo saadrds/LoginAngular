@@ -1,8 +1,11 @@
+using LoginAPIAngular.Models;
+using LoginAPIAngular.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -18,6 +21,8 @@ namespace LoginAPIAngular
 {
     public class Startup
     {
+        private readonly ApplicationContext _context;
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -25,12 +30,14 @@ namespace LoginAPIAngular
 
         public IConfiguration Configuration { get; }
 
-        private readonly string _policyName = "CorsPolicy";
+
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
             services.AddCors();
+            services.AddTransient<IUserService, UserServiceImp>();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -52,6 +59,7 @@ namespace LoginAPIAngular
                 };
 
             });
+            services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(Configuration.GetConnectionString("myApplicationContext")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

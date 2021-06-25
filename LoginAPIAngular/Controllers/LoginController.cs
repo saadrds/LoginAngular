@@ -1,4 +1,5 @@
 ﻿using LoginAPIAngular.Models;
+using LoginAPIAngular.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,21 +18,21 @@ namespace LoginAPIAngular.Controllers
     [ApiController]
     public class LoginController : ControllerBase
     {
+        private readonly IUserService service;
         private readonly IConfiguration configuration;
 
-        public readonly IEnumerable<User> users = new List<User>
-        {
-            new User{Id = 1, Username = "saad", Password="yes please", Role ="Admin" },
-            new User{Id = 2, Username = "safae", Password="yes please1", Role ="invited" }
-        };
+        public readonly IEnumerable<User> users;
 
-        public LoginController(IConfiguration configuration)
+        public LoginController(IConfiguration configuration,IUserService service)
         {
             this.configuration = configuration;
+            this.service = service;
+            users = service.allUsers();
         }
 
         private string GenerateWebToken(User userInfo)
         {
+            
             var user = users.Where(x => x.Username == userInfo.Username && x.Password == userInfo.Password).SingleOrDefault();
             if(user == null)
             {
@@ -66,6 +67,7 @@ namespace LoginAPIAngular.Controllers
         [HttpPost]
         public IActionResult Login([FromBody] User user)
         {
+
             var jwtToken = GenerateWebToken(user);
             if(jwtToken == null)
             {
@@ -79,6 +81,8 @@ namespace LoginAPIAngular.Controllers
         public IActionResult Get()  
         {
             var currentUser = HttpContext.User.Claims.Where(x => x.Type == "userid").SingleOrDefault();
+
+            
             return Ok("connected " + currentUser.Value);
         }
 
